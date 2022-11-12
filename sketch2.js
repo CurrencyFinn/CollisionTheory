@@ -3,7 +3,6 @@ class Particle {
     constructor (r,m, s, x, y, z) {
       this.position = new p5.Vector(x,y,z)
       this.velocity = p5.Vector.random3D();
-      console.log(this.velocity)
       this.velocity.mult(7)
       this.s = s
       this.r = r
@@ -32,10 +31,11 @@ class Particle {
 
       if (distanceVectMag < minDistance) {
         let distanceCorrection = (minDistance - distanceVectMag) / 2.0;
-        let d = distanceVect.copy();
+        let d = distanceVect.copy()
         let correctionVector = d.normalize().mult(distanceCorrection);
         other.position.add(correctionVector);
         this.position.sub(correctionVector);
+
       }
     }
     border () {
@@ -89,7 +89,9 @@ class Particle {
       particles[i].update();
       particles[i].show();
       particles[i].border();
-      particles[0].collisions(particles[1])
+      for (let j =i+1; j<(particles.length); j++) {
+        particles[i].collisions(particles[j])
+      }
     }
   }
   
