@@ -1,119 +1,188 @@
 class Particle {
-  constructor(x, y, r, m, c) {
-    this.position = new p5.Vector(x, y);
-    this.velocity = p5.Vector.random2D();
-    this.velocity.mult(3);
-    this.r = r;
-    this.m = m;
-  }
-  update() {
-    this.position.add(this.velocity);
-  }
 
-  checkBoundaryCollision() {
-    if (this.position.x > width - this.r) {
-      this.position.x = width - this.r;
-      this.velocity.x *= -1;
-    } else if (this.position.x < this.r) {
-      this.position.x = this.r;
-      this.velocity.x *= -1;
-    } else if (this.position.y > height - this.r) {
-      this.position.y = height - this.r;
-      this.velocity.y *= -1;
-    } else if (this.position.y < this.r) {
-      this.position.y = this.r;
-      this.velocity.y *= -1;
+    constructor (r,m, s, x, y, z) {
+
+      //liniear motion // velocity [hec/s]
+      this.m = m;
+      this.position = new p5.Vector(x,y,z);
+      let IntialV = Math.sqrt((3*kb*T)/(this.m*1.66E-27))/100;       // relation between kinetic energy and ideal gas law for a single particle
+      this.velocity = p5.Vector.random3D()
+      let magnitude = IntialV/this.velocity.mag()
+      this.velocity.mult(magnitude)
+
+      //angular motion
+      this.anglePosition = new p5.Vector(0,0,0)
+      this.anglurVelocity = p5.Vector.random3D()
+      this.anglurVelocity.div(PI)
+      this.s = s;
+      this.r = r;
+    }
+  
+    update () {
+      this.position.add(this.velocity);
+      this.anglePosition.add(this.anglurVelocity);
+    }
+  
+    show () {
+      noStroke();
+      //stroke(0,255,0);    //see rotation
+      push();
+      angleMode(RADIANS); 
+      translate(this.position.x, this.position.y, this.position.z)
+      rotateX(this.anglePosition.x)
+      rotateY(this.anglePosition.y)
+      rotateZ(this.anglePosition.z)
+      fill(this.s);
+      sphere(this.r);
+      pop();
+    }
+
+    collisions(other) {
+      let distanceVect = p5.Vector.sub(other.position, this.position);
+
+      let distanceVectMag = distanceVect.mag();
+
+      let minDistance = this.r + other.r;
+
+      
+      let rotationalKEnergy = (1/2)*(2/5)*this.m*this.r**2*this.anglurVelocity.mag()**2+(1/2)*(2/5)*other.m*other.r**2*other.anglurVelocity.mag()**2;
+      let linearKEnergy = 1/2*this.m*this.velocity.mag()**2+1/2*other.m*other.velocity.mag()**2;
+      let totalEnergy = rotationalKEnergy + linearKEnergy;
+      //console.log(totalEnergy)      // sometimes the particle is still stuck inside, mainly because dt is not infinity small, therefore a drastical change (before - after colliding) in the total energy change is not permitted.
+      if (distanceVectMag < minDistance) {
+        if (linearKEnergy >= Eact) {
+          this.reactionOccur(other);
+        } else{
+          this.paulieRep(other, linearKEnergy);
+        }
+      }
+    }
+
+    coulombAtrr() {
+        
+    }
+
+    paulieRep(other, E) {
+
+        // perfect elastic collision
+        let distanceVect = p5.Vector.sub(other.position, this.position);
+        let distanceVectMag = distanceVect.mag();
+        let minDistance = this.r + other.r;
+
+          //correction
+          let distanceCorrection = (minDistance - distanceVectMag) / 2.0;
+          let d = distanceVect.copy();
+          let correctionVector = d.normalize().mult(distanceCorrection);
+          other.position.add(correctionVector);
+          this.position.sub(correctionVector);
+
+          //collision     // has merely multiple collisions (still inside each other), no acceleration, no rotation, possibly also the linear velocities are wrong due to my lack of linear algebra
+          let normal = this.position.copy().sub(other.position).normalize();
+          let relativeVelocity = this.velocity.copy().sub(other.velocity);
+          let dot = relativeVelocity.dot(normal);
+          let impuls = -dot/(1/this.m+1/other.m);
+          let vFinal1 = this.velocity.copy().sub(impuls/this.m);
+          let vFinal2 = other.velocity.copy().add(impuls/other.m);
+          let KFinal = 1/2*this.m*vFinal1.mag()**2+1/2*other.m*vFinal2.mag()**2;
+
+          // checks if the linear kinetic energy after is smaller then the energy before with increasing measure of 10%, measure so the energy in the system does not shoot up (unrealistic).
+          if (KFinal < 1.1*E) {
+            this.velocity.sub(impuls/this.m);
+            other.velocity.add(impuls/other.m); 
+          }
+    }
+
+    reactionOccur (other) {
+
+      // perfect inelastic collision
+      let distanceVect = p5.Vector.sub(other.position, this.position);
+      let distanceVectMag = distanceVect.mag();
+      let minDistance = this.r + other.r;
+
+        //correction
+        let distanceCorrection = (minDistance - distanceVectMag) / 2.0;
+        let d = distanceVect.copy();
+        let correctionVector = d.normalize().mult(distanceCorrection);
+        other.position.add(correctionVector);
+        this.position.sub(correctionVector);
+
+        //collision
+        let velocityCM1 = this.velocity.copy();
+        let velocityCM2 = other.velocity.copy();
+        let vFinal= velocityCM1.mult(this.m).add(velocityCM2.mult(other.m)).div(this.m+other.m);
+        
+        // to correct for any faulty collisions a.k.a some particles went in other particles due to the complexicity of checking multiple particles
+        if (vFinal.mag()< this.velocity.mag()) {
+          this.velocity = vFinal;
+          other.velocity = this.velocity;
+        }    
+    }
+
+    border () {
+      if (this.position.x > 1/2*500 - this.r) {
+        this.position.x = 1/2*500 - this.r;
+        this.velocity.x *= -1;
+      }  else if (this.position.y > 1/2*500 - this.r) {
+        this.position.y = 1/2*500 - this.r;
+        this.velocity.y *= -1;
+      }  else if (this.position.x < -1/2*500 + this.r) {
+        this.position.x = -1/2*500 + this.r;
+        this.velocity.x *= -1;
+      }  else if (this.position.y < -1/2*500 + this.r) {
+        this.position.y = -1/2*500 + this.r;
+        this.velocity.y *= -1;
+      }  else if (this.position.z > 250 - this.r) {
+        this.position.z = 250 - this.r;
+        this.velocity.z *= -1;
+      } else if (this.position.z < -250 + this.r) {
+        this.position.z = -250 + this.r;
+        this.velocity.z *= -1;
+      }
+    }
+}
+  
+  let p;
+  let particles = [];
+  const Eact = 1000; //[J]
+  const T = 500; // [K]
+  const kb = 1.38E-23;
+  
+  function setup() {
+    var x = random(-1/2*500, 1/2*500);
+    var y = random(-1/2*500, 1/2*500);
+    var z = random(-250, 250)  ;  
+    createCanvas(windowWidth, windowHeight, WEBGL); //700*700*500 box
+
+    // mass in u, also the radius of the particle does not relate to the dimensions of the box.
+    p = new Particle(80,50,'red',0,0,0); //oxygen
+    particles.push(p);
+    p = new Particle(30,30,'black',x,y,z); // carbon
+    particles.push(p);
+    p = new Particle(30,30,'black',x,y,z); // carbon
+    particles.push(p);
+    p = new Particle(30,30,'black',x,y,z); // carbon
+    particles.push(p);
+  }
+  
+  function draw() {
+    background(255);
+    orbitControl(10,10);
+    lights();
+
+    // reference frame the particles lay in, closed system.
+    push();
+    stroke(0);       
+    noFill();
+    translate(0,0,0)
+    box(500,500);
+    pop();
+    for (let i =0; i<particles.length; i++) {
+      particles[i].update();
+      particles[i].show();
+      particles[i].border();
+      for (let j =i+1; j<(particles.length); j++) {
+        particles[i].collisions(particles[j])
+      }
     }
   }
-
-  checkCollision(other) {
-    let distanceVect = p5.Vector.sub(other.position, this.position);
-
-    let distanceVectMag = distanceVect.mag();
-
-    let minDistance = this.r + other.r;
-
-    if (distanceVectMag < minDistance) {
-      let distanceCorrection = (minDistance - distanceVectMag) / 2.0;
-      let d = distanceVect.copy();
-      let correctionVector = d.normalize().mult(distanceCorrection);
-      other.position.add(correctionVector);
-      this.position.sub(correctionVector);
-
-      let theta = distanceVect.heading();
-      let sine = sin(theta);
-      let cosine = cos(theta);
-
-
-      let bTemp = [new p5.Vector(), new p5.Vector()];
-
-      bTemp[1].x = cosine * distanceVect.x + sine * distanceVect.y;
-      bTemp[1].y = cosine * distanceVect.y - sine * distanceVect.x;
-
-      let vTemp = [new p5.Vector(), new p5.Vector()];
-
-      vTemp[0].x = cosine * this.velocity.x + sine * this.velocity.y;
-      vTemp[0].y = cosine * this.velocity.y - sine * this.velocity.x;
-      vTemp[1].x = cosine * other.velocity.x + sine * other.velocity.y;
-      vTemp[1].y = cosine * other.velocity.y - sine * other.velocity.x;
-
-      let vFinal = [new p5.Vector(), new p5.Vector()];
-
-      vFinal[0].x =
-        ((this.m - other.m) * vTemp[0].x + 2 * other.m * vTemp[1].x) /
-        (this.m + other.m);
-      vFinal[0].y = vTemp[0].y;
-
-      vFinal[1].x =
-        ((other.m - this.m) * vTemp[1].x + 2 * this.m * vTemp[0].x) /
-        (this.m + other.m);
-      vFinal[1].y = vTemp[1].y;
-
-      bTemp[0].x += vFinal[0].x;
-      bTemp[1].x += vFinal[1].x;
-
-      let bFinal = [new p5.Vector(), new p5.Vector()];
-
-      bFinal[0].x = cosine * bTemp[0].x - sine * bTemp[0].y;
-      bFinal[0].y = cosine * bTemp[0].y + sine * bTemp[0].x;
-      bFinal[1].x = cosine * bTemp[1].x - sine * bTemp[1].y;
-      bFinal[1].y = cosine * bTemp[1].y + sine * bTemp[1].x;
-
-      other.position.x = this.position.x + bFinal[1].x;
-      other.position.y = this.position.y + bFinal[1].y;
-
-      this.position.add(bFinal[0]);
-
-      this.velocity.x = cosine * vFinal[0].x - sine * vFinal[0].y;
-      this.velocity.y = cosine * vFinal[0].y + sine * vFinal[0].x;
-      other.velocity.x = cosine * vFinal[1].x - sine * vFinal[1].y;
-      other.velocity.y = cosine * vFinal[1].y + sine * vFinal[1].x;
-    }
-  }
-
-
-  display() {
-    noStroke();
-    fill(204);
-    ellipse(this.position.x, this.position.y, this.r * 2);
-  }
-}
-
-// sizes are in pm, the canvas is thus 1000x1000pm, masses are respectfully in u
-
-let particles = [new Particle(100, 400, 70, 12.011), new Particle(700, 400, 60, 15.999)];
-
-function setup() {
-  createCanvas(700, 700);
-}
-
-function draw() {
-  background(0);
-  for (let i = 0; i < particles.length; i++) {
-    let p = particles[i];
-    p.update();
-    p.display();
-    p.checkBoundaryCollision();
-    particles[0].checkCollision(particles[1]);
-  }
-}
+  
