@@ -160,8 +160,6 @@ class Particle {
     particles.push(p);
     p = new Particle(30,30,'black',x,y,z); // carbon
     particles.push(p);
-    p = new Particle(30,30,'black',x,y,z); // carbon
-    particles.push(p);
   }
   
   function draw() {
