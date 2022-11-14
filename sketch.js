@@ -49,6 +49,7 @@ class Particle {
       let linearKEnergy = 1/2*this.m*this.velocity.mag()**2+1/2*other.m*other.velocity.mag()**2;
       let totalEnergy = rotationalKEnergy + linearKEnergy;
       //console.log(totalEnergy)      // sometimes the particle is still stuck inside, mainly because dt is not infinity small, therefore a drastical change (before - after colliding) in the total energy change is not permitted.
+      Elist.push(totalEnergy);
       if (distanceVectMag < minDistance) {
         if (linearKEnergy >= Eact) {
           this.reactionOccur(other);
@@ -143,23 +144,24 @@ class Particle {
   
   let p;
   let particles = [];
+  let Elist = [];
   const Eact = 1000; //[J]
   const T = 500; // [K]
   const kb = 1.38E-23;
   
   function setup() {
-    var x = random(-1/2*500, 1/2*500);
-    var y = random(-1/2*500, 1/2*500);
-    var z = random(-250, 250)  ;  
+    // can be used to randomize the particles, would need an itteration for every single particle
+    let x = random(-250, 250);
+    let y = random(-250, 250);
+    let z = random(-250, 250);  
     createCanvas(windowWidth, windowHeight, WEBGL); //700*700*500 box
 
     // mass in u, also the radius of the particle does not relate to the dimensions of the box.
     p = new Particle(80,50,'red',0,0,0); //oxygen
     particles.push(p);
-    p = new Particle(30,30,'black',x,y,z); // carbon
+    p = new Particle(30,1,'black',random(-250, 250),random(-250, 250),random(-250, 250)); // carbon
     particles.push(p);
-    p = new Particle(30,30,'black',x,y,z); // carbon
-    particles.push(p);
+    p = new Particle(30,1,'black',random(-250, 250),random(-250, 250),random(-250, 250)); // carbon
   }
   
   function draw() {
@@ -181,6 +183,9 @@ class Particle {
       for (let j =i+1; j<(particles.length); j++) {
         particles[i].collisions(particles[j])
       }
+      
     }
+    console.log(Elist)
+    Elist = [];
   }
   
