@@ -46,6 +46,7 @@ In (my) collision theory this is seen as a perfect elastic collision, their mome
 ////////////////////////////////////////////////
 
 Discussion: 
+
 If the person reading this, not already thinks this is odd, then it would be a wise idea to follow a course on chemical bonding. 
 For instance, position of electrons, or the probability to find an electron is rather important for a chemical bond, use of density clouds for electrons could be useful here. 
 Moreover, following the standards of collision theory, entropic behaviour of the particle (vibration and rotation) does not affect the reaction rate.
@@ -56,6 +57,7 @@ Moreover, do particles do not attract each other in a sort of manner, there must
 Pauli repulsion happens not only at the core, but also at distance from the core and to what extent can a particle penetrate that barrier (lets stay away from quantum mechanics).
 
 Lack of knowledge:
+
 There are a lot of approximations made during this visualization (some that experts may easily spot), for instance there is no black body radiation between particles. 
 This all to simplify the computational power JS can handle and my brains. I wanted to visualize the concept that can be (rather easily) calculated by crunching equations and numbers.
 Moreover, my knowledge about linear algebra has increased by thus from 0 to something. So the concept of the elastic collision equations could be strongly wrong.
@@ -64,6 +66,7 @@ While finding angles to use polar coordinates, are relatively difficult with the
 Finally, I have experience with JavaScript (using p5js), but more experience using C/C++ and Python.
 
 Bugs:
+
 When colliding the velocity of bother particles are equalled, somewhat making the particle moving in the same direction. 
 However, if a particle pushed the "bonded" particles away, or moves trough their "bond", the bond gets enlarged, rather the position gets changed, but their velocities do not change.
 This is because the collided particles are not made-up in one new position vector and velocity vector.
@@ -73,15 +76,23 @@ This has been limited by introducing the if statement; that after the collision 
 Lastly, something surprising happens, unintentionally, when a high velocity particle reacts on a coding it can shoot of another already bounded particle of the body. Creating a sort of equilibrium
 
 Upcoming updates:
+
 * Activation energy differing between molecules
 * After collision creating list element [should improve distancing of bond]. 
 
 Sources:
+
 https://www.plasmaphysics.org.uk/collision3d.htm
+
 https://www2.msm.ctw.utwente.nl/sluding/PAPERS/coll2p.pdf
+
 https://www.euclideanspace.com/physics/dynamics/collision/threed/index.html
+
 https://en.wikipedia.org/wiki/Equipartition_theorem
+
 https://p5js.org/
 https://www.lehman.edu/faculty/anchordoqui/chapter15.pdf
+
 https://exploratoria.github.io/exhibits/mechanics/elastic-collisions-in-3d/
+
 Lectures by a fellow Limburger.
