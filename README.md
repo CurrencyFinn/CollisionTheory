@@ -10,6 +10,7 @@ in the setup function particles can be added, this by calling the particle class
 Note: mouse pad is preferred for zooming in.
 
 ///////////////////// Setup: //////////////////////
+
 Reaction Volume:
 
 The space of our universe (as of now) is 4 dimensional; x,y,z,t. All these 4 dimensions are displayed during the simulation. 
