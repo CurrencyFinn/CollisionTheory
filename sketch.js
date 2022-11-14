@@ -145,7 +145,7 @@ class Particle {
   let p;
   let particles = [];
   let Elist = [];
-  const Eact = 1000; //[J]
+  const Eact = 1000; 
   const T = 500; // [K]
   const kb = 1.38E-23;
   
@@ -155,21 +155,19 @@ class Particle {
     let y = random(-250, 250);
     let z = random(-250, 250);  
     createCanvas(windowWidth, windowHeight, WEBGL); //700*700*500 box
-
     // mass in u, also the radius of the particle does not relate to the dimensions of the box.
     p = new Particle(80,50,'red',0,0,0); //oxygen
     particles.push(p);
-    p = new Particle(30,1,'black',random(-250, 250),random(-250, 250),random(-250, 250)); // carbon
+    p = new Particle(30,10,'black',random(-250, 250),random(-250, 250),random(-250, 250)); // carbon
     particles.push(p);
-    p = new Particle(30,1,'black',random(-250, 250),random(-250, 250),random(-250, 250)); // carbon
+    p = new Particle(30,10,'black',random(-250, 250),random(-250, 250),random(-250, 250)); // carbon
   }
   
   function draw() {
     background(255);
+    // reference frame the particles lay in, closed system.
     orbitControl(10,10);
     lights();
-
-    // reference frame the particles lay in, closed system.
     push();
     stroke(0);       
     noFill();
