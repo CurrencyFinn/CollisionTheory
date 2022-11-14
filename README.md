@@ -9,7 +9,7 @@ Run:
 in the setup function particles can be added, this by calling the particle class (constructor). There are six parameters; r,m, s, x, y, z. Where r is the radius, m is the mass [u], s is the colour [in string format], x,y and z are the positions in the cartesian coordinate system. Moreover, T can be varied in the constants, this is the temperature of the system [K]. Finally, the activation energy (for all reaction) can be set. Around the box can be mapped using orbital control.
 Note: mouse pad is preferred for zooming in.
 
-///////////////////// Setup:
+///////////////////// Setup: //////////////////////
 Reaction Volume:
 
 The space of our universe (as of now) is 4 dimensional; x,y,z,t. All these 4 dimensions are displayed during the simulation. 
