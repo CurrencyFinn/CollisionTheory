@@ -6,7 +6,7 @@ Collision theory is a principle of chemistry used to predict the rates of chemic
 This simulation visualizes the occurrence of such a collision following the principal rules of collision theory.
 
 Run: 
-in the setup function particles can be added, this by calling the particle class (constructor). There are six parameters; r,m, s, x, y, z. Where r is the radius, m is the mass [u], s is the colour [in string format], x,y and z are the positions in the cartesian coordinate system. Moreover, T can be varied in the constants, this is the temperature of the system [K]. Finally, the activation energy (for all reaction) can be set. Around the box can be mapped using orbital control.
+in the setup function particles can be added, this by calling the particle class (constructor). There are six parameters; r, m, s, x, y, z. Where r is the radius, m is the mass [u], s is the colour [in string format], x, y and z are the positions in the cartesian coordinate system. Moreover, T can be varied in the constants, this is the temperature of the system [K]. Finally, the activation energy (for all reaction) can be set. Around the box can be mapped using orbital control.
 Note: mouse pad is preferred for zooming in.
 
 ![alt text](https://github.com/CurrencyFinn/CollisionTheory/blob/master/intro.png?raw=true)
